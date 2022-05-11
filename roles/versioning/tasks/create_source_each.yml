@@ -1,0 +1,40 @@
+---
+# Create connector for single sink
+- name: Run a shell command and register its output as a variable
+  command: echo {{item.name}}
+  register: source_name
+  ignore_errors: true
+
+- name: Print return information from the previous task
+  debug: msg="result '{{ source_name }}'"
+
+- name: Check the connector is exists
+  uri:
+    url: http://localhost:8083/connectors/{{item.name}}-source
+    return_content: yes
+    status_code: [200, 404]
+  register: this
+
+- name: Generate debezium source configurations
+  template: src=source.json.j2 dest={{source_name.stdout}}.json
+  when: this.status == 404
+
+
+- name: Generate debezium source configurations
+  template: src=update_source.json.j2 dest={{source_name.stdout}}.json
+  when: this.status == 200
+
+- name: Print return information from the previous task
+  debug: msg="result '{{ this }}'"
+
+- name: create debezium connector
+  command: curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @{{source_name.stdout}}.json
+  register: response
+  when: this.status == 404
+
+- name: update debezium connector
+  command: curl -i -X PUT -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/{{item.name}}-source/config -d @{{source_name.stdout}}.json
+  register: response
+  when: this.status == 200
+- name: Print return information from the previous task
+  debug: msg="result '{{ response }}'"

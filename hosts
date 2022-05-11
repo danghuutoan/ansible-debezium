@@ -1,0 +1,9 @@
+#The site wide list of mongodb servers
+
+# the mongo servers need a mongod_port variable set, and they must not conflict.
+[kafka_connect_servers]
+localhost kafka_connect_port=8083
+
+
+
+

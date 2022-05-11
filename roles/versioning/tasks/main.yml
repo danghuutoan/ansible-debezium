@@ -1,0 +1,11 @@
+---
+# This Playbook runs all the common plays in the deployment
+
+- name: Generate debezium sink configurations
+  include_tasks: create_sink_each.yml
+  with_items: "{{sinks}}"
+
+- name: Generate debezium source configurations
+  include_tasks: create_source_each.yml
+  with_items: "{{sources}}"
+

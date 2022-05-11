@@ -1,0 +1,37 @@
+sinks:
+  - name: abcxyz
+    dbname: sink_db
+    host: citus
+    port: 5432
+    username: postgres
+    password: password
+    db_type: postgresql
+    topics:
+      - sink_db.public.entity_attribute_group
+      - sink_db.public.entity_relation
+
+sources:
+  - name: abcdfdf
+    dbname: postgres
+    host: citus
+    port: 5432
+    username: postgres
+    password: password
+    db_type: postgresql
+    include_tables:
+      - entity_attribute_group
+      - entity_relation
+    schema: public
+    sink_dbname: sink_db
+
+debezium:
+  url: 
+    - http://localhost:8083
+
+schema_registry:
+  url: 
+    - http://schema-registry:8081
+
+kafka:
+  bootstrap_servers:
+    - kafka:9092
